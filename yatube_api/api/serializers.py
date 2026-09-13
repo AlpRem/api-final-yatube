@@ -3,8 +3,6 @@ from rest_framework import serializers
 
 from posts.models import Comment, Follow, Group, Post
 
-from .validators import validate_follow_not_self, validate_follow_unique
-
 User = get_user_model()
 
 
@@ -55,6 +53,15 @@ class FollowSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         user = self.context['request'].user
         following = attrs['following']
-        validate_follow_not_self(user, following)
-        validate_follow_unique(Follow, user, following)
+        if user == following:
+            raise serializers.ValidationError(
+                'Ошибка подписи на самого себя.'
+            )
+        if Follow.objects.filter(
+                user=user,
+                following=following
+        ).exists():
+            raise serializers.ValidationError(
+                'Ошибка подписи на уже подписанного пользователя.'
+            )
         return attrs
