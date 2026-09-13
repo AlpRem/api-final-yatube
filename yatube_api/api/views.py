@@ -1,4 +1,4 @@
-from rest_framework import filters, mixins, permissions, viewsets
+from rest_framework import filters, mixins, permissions, serializers, viewsets
 
 from posts.models import Comment, Follow, Group, Post
 
@@ -39,6 +39,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 class GroupViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Group.objects.all()
     serializer_class = GroupSerializer
+    permission_classes = (permissions.AllowAny,)
 
 
 class FollowViewSet(
@@ -58,3 +59,16 @@ class FollowViewSet(
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+    class Meta:
+        model = Follow
+        fields = ('user', 'following')
+
+    def validate(self, attrs):
+        if Follow.objects.filter(
+                user=self.context['request'].user,
+                following=attrs['following']
+        ).exists():
+            raise serializers.ValidationError()
+
+        return attrs
