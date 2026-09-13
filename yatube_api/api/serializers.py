@@ -2,8 +2,10 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
 from posts.models import Comment, Follow, Group, Post
-from .validators import (validate_follow_not_self,
-                                       validate_follow_unique)
+from .validators import (
+    validate_follow_not_self,
+    validate_follow_unique
+)
 
 User = get_user_model()
 
