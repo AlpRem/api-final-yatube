@@ -93,3 +93,6 @@ class Follow(models.Model):
                 name='unique_user_following'
             )
         ]
+
+    def __str__(self):
+        return f'{self.user} подписан на {self.following}'
