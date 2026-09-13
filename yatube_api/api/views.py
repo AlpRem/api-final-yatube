@@ -32,3 +32,8 @@ class CommentViewSet(viewsets.ModelViewSet):
             author=self.request.user,
             post_id=self.kwargs['post_id']
         )
+
+
+class GroupViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Group.objects.all()
+    serializer_class = GroupSerializer
