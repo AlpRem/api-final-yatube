@@ -4,8 +4,12 @@ from posts.models import Comment, Follow, Group, Post
 
 from .pagination import PostPagination
 from .permissions import PostAndCommentPermission
-from .serializers import (CommentSerializer, FollowSerializer, GroupSerializer,
-                          PostSerializer)
+from .serializers import (
+    CommentSerializer,
+    FollowSerializer,
+    GroupSerializer,
+    PostSerializer,
+)
 
 
 class PostViewSet(viewsets.ModelViewSet):
