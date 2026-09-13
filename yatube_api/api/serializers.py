@@ -2,6 +2,8 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
 from posts.models import Comment, Follow, Group, Post
+from yatube_api.api.validators import (validate_follow_not_self,
+                                       validate_follow_unique)
 
 User = get_user_model()
 
@@ -51,10 +53,8 @@ class FollowSerializer(serializers.ModelSerializer):
         fields = ('user', 'following')
 
     def validate(self, attrs):
-        if Follow.objects.filter(
-                user=self.context['request'].user,
-                following=attrs['following']
-        ).exists():
-            raise serializers.ValidationError()
-
+        user = self.context['request'].user
+        following = attrs['following']
+        validate_follow_not_self(user, following)
+        validate_follow_unique(Follow, user, following)
         return attrs
