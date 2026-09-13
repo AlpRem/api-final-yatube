@@ -47,5 +47,14 @@ class FollowSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        fields = ('user', 'following')
         model = Follow
+        fields = ('user', 'following')
+
+    def validate(self, attrs):
+        if Follow.objects.filter(
+                user=self.context['request'].user,
+                following=attrs['following']
+        ).exists():
+            raise serializers.ValidationError()
+
+        return attrs

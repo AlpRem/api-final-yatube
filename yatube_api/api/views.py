@@ -1,4 +1,4 @@
-from rest_framework import filters, mixins, permissions, serializers, viewsets
+from rest_framework import filters, mixins, permissions, viewsets
 
 from posts.models import Comment, Follow, Group, Post
 
@@ -13,6 +13,14 @@ class PostViewSet(viewsets.ModelViewSet):
     serializer_class = PostSerializer
     permission_classes = (PostAndCommentPermission,)
     pagination_class = PostPagination
+
+    def paginate_queryset(self, queryset):
+        if (
+                'limit' not in self.request.query_params
+                and 'offset' not in self.request.query_params
+        ):
+            return None
+        return super().paginate_queryset(queryset)
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
@@ -59,16 +67,3 @@ class FollowViewSet(
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
-
-    class Meta:
-        model = Follow
-        fields = ('user', 'following')
-
-    def validate(self, attrs):
-        if Follow.objects.filter(
-                user=self.context['request'].user,
-                following=attrs['following']
-        ).exists():
-            raise serializers.ValidationError()
-
-        return attrs
